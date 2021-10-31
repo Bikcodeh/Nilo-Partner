@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Nilo partner</string>
+    <string name="create_product">Create</string>
+    <string name="loading">Loading</string>
 </resources>
