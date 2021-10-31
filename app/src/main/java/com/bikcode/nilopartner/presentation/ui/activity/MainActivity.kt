@@ -1,4 +1,4 @@
-package com.bikcode.nilopartner
+package com.bikcode.nilopartner.presentation.ui.activity
 
 import android.os.Bundle
 import android.view.Menu
@@ -8,14 +8,17 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
+import com.bikcode.nilopartner.R
 import com.bikcode.nilopartner.data.model.ProductDTO
 import com.bikcode.nilopartner.databinding.ActivityMainBinding
 import com.bikcode.nilopartner.presentation.adapter.ProductAdapter
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
+import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity(), OnProductListener {
 
@@ -58,6 +61,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
         setContentView(binding.root)
         configAuth()
         setupRecycler()
+        setupFirestore()
     }
 
     private fun setupRecycler() {
@@ -71,18 +75,6 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                 false
             )
             adapter = productAdapter
-        }
-
-        (1..20).forEach {
-            val product = ProductDTO(
-                it.toString(),
-                "Product $it",
-                "Product is $it",
-                "",
-                it,
-                it * 1.1
-            )
-            productAdapter.add(product)
         }
     }
 
@@ -110,6 +102,19 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                 )
             }
         }
+    }
+
+    private fun setupFirestore() {
+        val db = FirebaseFirestore.getInstance()
+        db.collection(PRODUCTS_COLLECTION).get()
+            .addOnSuccessListener { snapshots ->
+                for(document in snapshots) {
+                    val product = document.toObject(ProductDTO::class.java)
+                    productAdapter.add(product)
+                }
+            }.addOnFailureListener {
+                Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onResume() {

@@ -1,10 +1,10 @@
 package com.bikcode.nilopartner.data.model
 
 data class ProductDTO(
-    var id: String?,
-    var name: String?,
-    var description: String?,
-    var imgUrl: String?,
+    var id: String? = null,
+    var name: String? = null,
+    var description: String? = null,
+    var imgUrl: String? = null,
     var quantity: Int = 0,
     var price: Double = 0.0
 ) {
