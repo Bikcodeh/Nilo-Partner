@@ -1,0 +1,69 @@
+{
+  "project_info": {
+    "project_number": "951165932886",
+    "firebase_url": "https://fir-appinitialcourse-default-rtdb.firebaseio.com",
+    "project_id": "fir-appinitialcourse",
+    "storage_bucket": "fir-appinitialcourse.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:951165932886:android:b9ed2a4c86bf83643772f7",
+        "android_client_info": {
+          "package_name": "com.bikcode.firebaseappinitialcourse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "951165932886-t3bb9hc03a7r2vpgdgdchk8ueh99hrpt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4Dy6zMxaQ6k84WmiOyFxeiXKTxwROEnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "951165932886-t3bb9hc03a7r2vpgdgdchk8ueh99hrpt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:951165932886:android:7c731fca4531dd2e3772f7",
+        "android_client_info": {
+          "package_name": "com.bikcode.nilopartner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "951165932886-t3bb9hc03a7r2vpgdgdchk8ueh99hrpt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4Dy6zMxaQ6k84WmiOyFxeiXKTxwROEnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "951165932886-t3bb9hc03a7r2vpgdgdchk8ueh99hrpt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
