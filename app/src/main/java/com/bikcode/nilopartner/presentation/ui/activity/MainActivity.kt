@@ -13,6 +13,7 @@ import com.bikcode.nilopartner.data.model.ProductDTO
 import com.bikcode.nilopartner.databinding.ActivityMainBinding
 import com.bikcode.nilopartner.presentation.adapter.ProductAdapter
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
+import com.bikcode.nilopartner.presentation.ui.dialog.AddDialogFragment
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
@@ -45,10 +46,11 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                     finish()
                 } else {
                     response.error?.let {
-                        if(it.errorCode == ErrorCodes.NO_NETWORK) {
+                        if (it.errorCode == ErrorCodes.NO_NETWORK) {
                             Toast.makeText(this, "No connection", Toast.LENGTH_SHORT).show()
                         } else {
-                            Toast.makeText(this, "Error code: ${it.errorCode}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "Error code: ${it.errorCode}", Toast.LENGTH_SHORT)
+                                .show()
                         }
                     }
                 }
@@ -62,6 +64,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
         configAuth()
         setupRecycler()
         setupFirestore()
+        setupButtons()
     }
 
     private fun setupRecycler() {
@@ -87,6 +90,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                 supportActionBar?.title = auth.currentUser?.displayName
                 binding.lyProgress.visibility = View.GONE
                 binding.nsvProducts.visibility = View.VISIBLE
+                binding.fabCreate.show()
             } else {
                 val providers = arrayListOf(
                     AuthUI.IdpConfig.EmailBuilder().build(),
@@ -108,13 +112,20 @@ class MainActivity : AppCompatActivity(), OnProductListener {
         val db = FirebaseFirestore.getInstance()
         db.collection(PRODUCTS_COLLECTION).get()
             .addOnSuccessListener { snapshots ->
-                for(document in snapshots) {
+                for (document in snapshots) {
                     val product = document.toObject(ProductDTO::class.java)
                     productAdapter.add(product)
                 }
             }.addOnFailureListener {
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun setupButtons() {
+        binding.fabCreate.setOnClickListener {
+            AddDialogFragment().show(supportFragmentManager,
+                AddDialogFragment::class.java.simpleName)
+        }
     }
 
     override fun onResume() {
@@ -142,6 +153,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                         if (it.isSuccessful) {
                             binding.nsvProducts.visibility = View.GONE
                             binding.lyProgress.visibility = View.VISIBLE
+                            binding.fabCreate.hide()
                         } else {
                             Toast.makeText(this, "A problem has occurred", Toast.LENGTH_SHORT)
                                 .show()
@@ -153,7 +165,10 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     }
 
     override fun onClick(product: ProductDTO) {
-        TODO("Not yet implemented")
+        AddDialogFragment().show(
+            supportFragmentManager,
+            AddDialogFragment::class.java.simpleName
+        )
     }
 
     override fun onLongClick(product: ProductDTO) {
