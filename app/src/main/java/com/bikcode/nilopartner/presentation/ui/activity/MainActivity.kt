@@ -12,6 +12,7 @@ import com.bikcode.nilopartner.R
 import com.bikcode.nilopartner.data.model.ProductDTO
 import com.bikcode.nilopartner.databinding.ActivityMainBinding
 import com.bikcode.nilopartner.presentation.adapter.ProductAdapter
+import com.bikcode.nilopartner.presentation.listeners.MainAux
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
 import com.bikcode.nilopartner.presentation.ui.dialog.AddDialogFragment
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
@@ -24,7 +25,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
-class MainActivity : AppCompatActivity(), OnProductListener {
+class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
     private lateinit var productAdapter: ProductAdapter
     private lateinit var firestoreListener: ListenerRegistration
+    private var productSelected: ProductDTO? = null
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -151,6 +153,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
 
     private fun setupButtons() {
         binding.fabCreate.setOnClickListener {
+            productSelected = null
             AddDialogFragment().show(supportFragmentManager,
                 AddDialogFragment::class.java.simpleName)
         }
@@ -196,7 +199,8 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     }
 
     override fun onClick(product: ProductDTO) {
-        AddDialogFragment().show(
+        productSelected = product
+        AddDialogFragment(product).show(
             supportFragmentManager,
             AddDialogFragment::class.java.simpleName
         )
@@ -213,4 +217,6 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                 }
         }
     }
+
+    override fun getProductSelected(): ProductDTO? = productSelected
 }
