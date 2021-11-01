@@ -15,11 +15,14 @@ import com.bikcode.nilopartner.presentation.adapter.ProductAdapter
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
 import com.bikcode.nilopartner.presentation.ui.dialog.AddDialogFragment
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
+import com.bikcode.nilopartner.presentation.util.showToast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 class MainActivity : AppCompatActivity(), OnProductListener {
 
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
     private lateinit var productAdapter: ProductAdapter
+    private lateinit var firestoreListener: ListenerRegistration
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -63,8 +67,31 @@ class MainActivity : AppCompatActivity(), OnProductListener {
         setContentView(binding.root)
         configAuth()
         setupRecycler()
-        setupFirestore()
+        //setupFirestore()
+        setupFirestoreRealtime()
         setupButtons()
+    }
+
+    private fun setupFirestoreRealtime() {
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(PRODUCTS_COLLECTION)
+
+        firestoreListener = productRef.addSnapshotListener { snapshots, error ->
+            if(error != null) {
+                showToast(R.string.error_fetching_data)
+                return@addSnapshotListener
+            }
+
+            for(snapshot in snapshots!!.documentChanges) {
+                val product = snapshot.document.toObject(ProductDTO::class.java)
+                product.id = snapshot.document.id
+                when(snapshot.type) {
+                    DocumentChange.Type.ADDED -> productAdapter.add(product)
+                    DocumentChange.Type.REMOVED -> productAdapter.delete(product)
+                    DocumentChange.Type.MODIFIED -> productAdapter.update(product)
+                }
+            }
+        }
     }
 
     private fun setupRecycler() {

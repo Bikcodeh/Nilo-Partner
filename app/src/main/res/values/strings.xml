@@ -10,5 +10,6 @@
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="product_added">Product added!</string>
-    <string name="insert_error">An error has ocurred inserting</string>
+    <string name="insert_error">An error has occurred inserting</string>
+    <string name="error_fetching_data">An error has occurred fetching data</string>
 </resources>

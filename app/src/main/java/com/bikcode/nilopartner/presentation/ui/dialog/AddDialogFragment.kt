@@ -14,7 +14,7 @@ import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.showToast
 import com.google.firebase.firestore.FirebaseFirestore
 
-class AddDialogFragment: DialogFragment(), DialogInterface.OnShowListener {
+class AddDialogFragment : DialogFragment(), DialogInterface.OnShowListener {
 
     private var _binding: FragmentDialogAddBinding? = null
     private var positiveButton: Button? = null
@@ -43,7 +43,7 @@ class AddDialogFragment: DialogFragment(), DialogInterface.OnShowListener {
     }
 
     override fun onShow(dialogInterface: DialogInterface?) {
-        val dialog= dialog as? AlertDialog
+        val dialog = dialog as? AlertDialog
         dialog?.let {
             positiveButton = it.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton = it.getButton(Dialog.BUTTON_NEGATIVE)
@@ -56,7 +56,6 @@ class AddDialogFragment: DialogFragment(), DialogInterface.OnShowListener {
                         quantity = binding.tieQuantity.text.toString().toInt(),
                         price = binding.tiePrice.text.toString().toDouble()
                     )
-
                     save(product)
                 }
             }
