@@ -74,6 +74,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
 
             positiveButton?.text = getString(textButtonId)
             positiveButton?.setOnClickListener {
+                enableUI(enable = false)
                 _binding?.let { binding ->
                     if(productSelected != null) {
                         productSelected?.apply {
@@ -115,6 +116,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                 }.addOnFailureListener {
                     context?.showToast(R.string.insert_error)
                 }.addOnCompleteListener {
+                    enableUI(enable = true)
                     dismiss()
                 }
         }
@@ -128,8 +130,23 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             }.addOnFailureListener {
                 context?.showToast(R.string.insert_error)
             }.addOnCompleteListener {
+                enableUI(enable = true)
                 dismiss()
             }
+    }
+
+    private fun enableUI(enable: Boolean) {
+        positiveButton?.let { it.isEnabled = enable }
+        negativeButton?.let { it.isEnabled = enable }
+
+        _binding?.let {
+            with(it) {
+                tieQuantity.isEnabled = enable
+                tiePrice.isEnabled = enable
+                tieName.isEnabled = enable
+                tieDescription.isEnabled = enable
+            }
+        }
     }
 
     override fun onDestroy() {
