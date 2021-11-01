@@ -12,4 +12,5 @@
     <string name="product_added">Product added!</string>
     <string name="insert_error">An error has occurred inserting</string>
     <string name="error_fetching_data">An error has occurred fetching data</string>
+    <string name="delete_error">Error deleting the element</string>
 </resources>

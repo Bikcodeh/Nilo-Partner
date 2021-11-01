@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
         configAuth()
         setupRecycler()
         //setupFirestore()
-        setupFirestoreRealtime()
+        //setupFirestoreRealtime()
         setupButtons()
     }
 
@@ -159,11 +159,14 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(authStateListener)
+        setupFirestoreRealtime()
+
     }
 
     override fun onPause() {
         super.onPause()
         firebaseAuth.removeAuthStateListener(authStateListener)
+        firestoreListener.remove()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -200,6 +203,14 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     }
 
     override fun onLongClick(product: ProductDTO) {
-        TODO("Not yet implemented")
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(PRODUCTS_COLLECTION)
+        product.id?.let { id ->
+            productRef.document(id)
+                .delete()
+                .addOnFailureListener {
+                    showToast(R.string.delete_error)
+                }
+        }
     }
 }
