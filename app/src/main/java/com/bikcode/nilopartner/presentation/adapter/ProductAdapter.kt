@@ -17,6 +17,7 @@ class ProductAdapter: RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
     private lateinit var listener: OnProductListener
     private lateinit var context: Context
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setData(data: List<ProductDTO>) {
         products.clear()
         products.addAll(data)
@@ -31,6 +32,26 @@ class ProductAdapter: RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
         if(products.contains(productDTO).not()) {
             products.add(productDTO)
             notifyItemInserted(products.count() - 1)
+        } else {
+            update(productDTO)
+        }
+    }
+
+    fun update(productDTO: ProductDTO) {
+        products.indexOf(productDTO).also {
+            if(it != -1) {
+                products[it] = productDTO
+                notifyItemChanged(it)
+            }
+        }
+    }
+
+    fun delete(productDTO: ProductDTO) {
+        products.indexOf(productDTO).also {
+            if(it != -1) {
+                products.removeAt(it)
+                notifyItemRemoved(it)
+            }
         }
     }
 

@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
             .addOnSuccessListener { snapshots ->
                 for (document in snapshots) {
                     val product = document.toObject(ProductDTO::class.java)
+                    product.id = document.id
                     productAdapter.add(product)
                 }
             }.addOnFailureListener {

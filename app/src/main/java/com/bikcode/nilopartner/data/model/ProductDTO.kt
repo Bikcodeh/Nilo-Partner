@@ -1,7 +1,10 @@
 package com.bikcode.nilopartner.data.model
 
+import com.google.firebase.firestore.Exclude
+
 data class ProductDTO(
-    var id: String? = null,
+    //Exlude an element when insert data
+    @get:Exclude var id: String? = null,
     var name: String? = null,
     var description: String? = null,
     var imgUrl: String? = null,
