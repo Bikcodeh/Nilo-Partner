@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:padding="@dimen/common_padding_default">
 
     <androidx.constraintlayout.widget.Guideline
@@ -112,5 +113,28 @@
         app:layout_constraintEnd_toEndOf="@id/imgProductPreview"
         app:layout_constraintTop_toTopOf="@id/imgProductPreview"
         app:layout_constraintBottom_toBottomOf="@id/imgProductPreview" />
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/tilPrice"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/imgProductPreview"
+        tools:visibility="visible"
+        tools:progress="75" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tvProgress"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/common_padding_min"
+        app:layout_constraintStart_toStartOf="@id/progressBar"
+        app:layout_constraintEnd_toEndOf="@id/progressBar"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar"
+        tools:text="Subiendo...75%"/>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

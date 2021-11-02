@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import com.bikcode.nilopartner.R
 import com.bikcode.nilopartner.data.model.ProductDTO
@@ -74,6 +75,8 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                     .load(productExist.imgUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop()
+                    .placeholder(R.drawable.ic_access_time)
+                    .error(R.drawable.ic_broken_image)
                     .into(it.imgProductPreview)
             }
         }
@@ -142,8 +145,16 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
 
         photoSelectedUri?.let { uri ->
             _binding?.let { binding ->
+                binding.progressBar.isVisible = true
                 val photoRef = storageRef.child(eventPost.documentId!!)
                 photoRef.putFile(uri)
+                    .addOnProgressListener {
+                        val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
+                        it.run {
+                            binding.progressBar.progress = progress
+                            binding.tvProgress.text = String.format("%s%%", progress)
+                        }
+                    }
                     .addOnSuccessListener {
                         it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
                             eventPost.isSuccess = true
@@ -151,6 +162,8 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                             callback(eventPost)
                         }
                     }.addOnFailureListener {
+                        context?.showToast(R.string.error_sending_image)
+                        enableUI(enable = true)
                         eventPost.isSuccess = false
                         callback(eventPost)
                     }
@@ -185,6 +198,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                     context?.showToast(R.string.insert_error)
                 }.addOnCompleteListener {
                     enableUI(enable = true)
+                    _binding?.progressBar?.isVisible = false
                     dismiss()
                 }
         }
@@ -199,6 +213,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                 context?.showToast(R.string.insert_error)
             }.addOnCompleteListener {
                 enableUI(enable = true)
+                _binding?.progressBar?.isVisible = false
                 dismiss()
             }
     }

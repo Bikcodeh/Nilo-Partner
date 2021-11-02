@@ -15,4 +15,5 @@
     <string name="delete_error">Error deleting the element</string>
     <string name="update_product">Update</string>
     <string name="product_updated">Product updated!</string>
+    <string name="error_sending_image">An error has occurred uploading the image</string>
 </resources>
