@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,6 +19,8 @@ import com.bikcode.nilopartner.presentation.util.Constants.PATH_PRODUCTS_IMAGES
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.EventPost
 import com.bikcode.nilopartner.presentation.util.showToast
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -68,6 +69,12 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                 it.tieDescription.setText(productExist.description)
                 it.tiePrice.setText(productExist.price.toString())
                 it.tieQuantity.setText(productExist.quantity.toString())
+
+                Glide.with(this)
+                    .load(productExist.imgUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .into(it.imgProductPreview)
             }
         }
     }
@@ -92,25 +99,29 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             positiveButton?.setOnClickListener {
                 enableUI(enable = false)
 
-                uploadImage()
-                _binding?.let { binding ->
-                    if (productSelected != null) {
-                        productSelected?.apply {
-                            name = binding.tieName.text.toString().trim()
-                            description = binding.tieDescription.text.toString().trim()
-                            quantity = binding.tieQuantity.text.toString().toInt()
-                            price = binding.tiePrice.text.toString().toDouble()
+                uploadImage() { eventPost ->
+                    if (eventPost.isSuccess) {
+                        _binding?.let { binding ->
+                            if (productSelected != null) {
+                                productSelected?.apply {
+                                    name = binding.tieName.text.toString().trim()
+                                    description = binding.tieDescription.text.toString().trim()
+                                    quantity = binding.tieQuantity.text.toString().toInt()
+                                    price = binding.tiePrice.text.toString().toDouble()
 
-                            update(this)
+                                    update(this)
+                                }
+                            } else {
+                                val product = ProductDTO(
+                                    name = binding.tieName.text.toString().trim(),
+                                    description = binding.tieDescription.text.toString().trim(),
+                                    quantity = binding.tieQuantity.text.toString().toInt(),
+                                    price = binding.tiePrice.text.toString().toDouble(),
+                                    imgUrl = eventPost.photoUrl
+                                )
+                                save(product, eventPost.documentId!!)
+                            }
                         }
-                    } else {
-                        val product = ProductDTO(
-                            name = binding.tieName.text.toString().trim(),
-                            description = binding.tieDescription.text.toString().trim(),
-                            quantity = binding.tieQuantity.text.toString().toInt(),
-                            price = binding.tiePrice.text.toString().toDouble()
-                        )
-                        save(product)
                     }
                 }
             }
@@ -121,9 +132,10 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         }
     }
 
-    private fun uploadImage() {
+    private fun uploadImage(callback: (EventPost) -> Unit) {
         val eventPost = EventPost()
-        eventPost.documentId = FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION).document().id
+        eventPost.documentId =
+            FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION).document().id
         val storageRef = FirebaseStorage.getInstance().reference.child(PATH_PRODUCTS_IMAGES)
 
         photoSelectedUri?.let { uri ->
@@ -132,10 +144,13 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                 photoRef.putFile(uri)
                     .addOnSuccessListener {
                         it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-                            Log.d("DATA *-*-*-*", downloadUrl.toString())
+                            eventPost.isSuccess = true
+                            eventPost.photoUrl = downloadUrl.toString()
+                            callback(eventPost)
                         }
                     }.addOnFailureListener {
-                        Log.e("Error *-*-*-*", it.message ?: "")
+                        eventPost.isSuccess = false
+                        callback(eventPost)
                     }
             }
         }
@@ -173,9 +188,9 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         }
     }
 
-    private fun save(productDTO: ProductDTO) {
+    private fun save(productDTO: ProductDTO, documentId: String) {
         val db = FirebaseFirestore.getInstance()
-        db.collection(PRODUCTS_COLLECTION).add(productDTO)
+        db.collection(PRODUCTS_COLLECTION).document(documentId).set(productDTO)
             .addOnSuccessListener {
                 context?.showToast(R.string.product_added)
             }.addOnFailureListener {

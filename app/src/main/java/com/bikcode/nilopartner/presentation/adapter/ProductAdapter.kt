@@ -10,6 +10,8 @@ import com.bikcode.nilopartner.R
 import com.bikcode.nilopartner.data.model.ProductDTO
 import com.bikcode.nilopartner.databinding.ItemProductBinding
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 class ProductAdapter: RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
@@ -63,6 +65,12 @@ class ProductAdapter: RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
                 tvName.text = productDTO.name
                 tvPrice.text = productDTO.price.toString()
                 tvQuantity.text = productDTO.quantity.toString()
+
+                Glide.with(context)
+                    .load(productDTO.imgUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .into(imgProduct)
             }
         }
 
