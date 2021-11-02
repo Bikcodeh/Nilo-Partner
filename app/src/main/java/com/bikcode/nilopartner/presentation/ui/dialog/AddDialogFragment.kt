@@ -99,7 +99,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             positiveButton?.setOnClickListener {
                 enableUI(enable = false)
 
-                uploadImage() { eventPost ->
+                uploadImage(productSelected?.id) { eventPost ->
                     if (eventPost.isSuccess) {
                         _binding?.let { binding ->
                             if (productSelected != null) {
@@ -108,6 +108,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                                     description = binding.tieDescription.text.toString().trim()
                                     quantity = binding.tieQuantity.text.toString().toInt()
                                     price = binding.tiePrice.text.toString().toDouble()
+                                    imgUrl = eventPost.photoUrl
 
                                     update(this)
                                 }
@@ -132,10 +133,11 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         }
     }
 
-    private fun uploadImage(callback: (EventPost) -> Unit) {
+    private fun uploadImage(productId: String?, callback: (EventPost) -> Unit) {
         val eventPost = EventPost()
         eventPost.documentId =
-            FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION).document().id
+            productId ?: FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION)
+                .document().id
         val storageRef = FirebaseStorage.getInstance().reference.child(PATH_PRODUCTS_IMAGES)
 
         photoSelectedUri?.let { uri ->
