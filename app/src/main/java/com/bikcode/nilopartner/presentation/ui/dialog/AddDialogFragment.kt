@@ -1,31 +1,46 @@
 package com.bikcode.nilopartner.presentation.ui.dialog
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.Button
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.bikcode.nilopartner.R
 import com.bikcode.nilopartner.data.model.ProductDTO
 import com.bikcode.nilopartner.databinding.FragmentDialogAddBinding
-import com.bikcode.nilopartner.presentation.listeners.MainAux
+import com.bikcode.nilopartner.presentation.util.Constants.PATH_PRODUCTS_IMAGES
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
+import com.bikcode.nilopartner.presentation.util.EventPost
 import com.bikcode.nilopartner.presentation.util.showToast
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
-class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragment(), DialogInterface.OnShowListener {
+class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragment(),
+    DialogInterface.OnShowListener {
 
     private var _binding: FragmentDialogAddBinding? = null
     private var positiveButton: Button? = null
     private var negativeButton: Button? = null
     private var productSelected: ProductDTO? = null
+    private var photoSelectedUri: Uri? = null
+    private val resultLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK) {
+                photoSelectedUri = it.data?.data
+
+                _binding?.imgProductPreview?.setImageURI(photoSelectedUri)
+            }
+        }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-
-
         activity?.let { activity ->
             _binding = FragmentDialogAddBinding.inflate(LayoutInflater.from(context))
 
@@ -60,13 +75,14 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
     override fun onShow(dialogInterface: DialogInterface?) {
         productSelected = product
         initProduct()
+        configButtons()
 
         val dialog = dialog as? AlertDialog
         dialog?.let {
             positiveButton = it.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton = it.getButton(Dialog.BUTTON_NEGATIVE)
 
-            val textButtonId = if(productSelected != null) {
+            val textButtonId = if (productSelected != null) {
                 R.string.update_product
             } else {
                 R.string.add_product
@@ -75,8 +91,10 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             positiveButton?.text = getString(textButtonId)
             positiveButton?.setOnClickListener {
                 enableUI(enable = false)
+
+                uploadImage()
                 _binding?.let { binding ->
-                    if(productSelected != null) {
+                    if (productSelected != null) {
                         productSelected?.apply {
                             name = binding.tieName.text.toString().trim()
                             description = binding.tieDescription.text.toString().trim()
@@ -85,7 +103,6 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
 
                             update(this)
                         }
-
                     } else {
                         val product = ProductDTO(
                             name = binding.tieName.text.toString().trim(),
@@ -101,6 +118,40 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             negativeButton?.setOnClickListener {
                 dismiss()
             }
+        }
+    }
+
+    private fun uploadImage() {
+        val eventPost = EventPost()
+        eventPost.documentId = FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION).document().id
+        val storageRef = FirebaseStorage.getInstance().reference.child(PATH_PRODUCTS_IMAGES)
+
+        photoSelectedUri?.let { uri ->
+            _binding?.let { binding ->
+                val photoRef = storageRef.child(eventPost.documentId!!)
+                photoRef.putFile(uri)
+                    .addOnSuccessListener {
+                        it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+                            Log.d("DATA *-*-*-*", downloadUrl.toString())
+                        }
+                    }.addOnFailureListener {
+                        Log.e("Error *-*-*-*", it.message ?: "")
+                    }
+            }
+        }
+    }
+
+    private fun configButtons() {
+        _binding?.let {
+            it.ibProduct.setOnClickListener {
+                openGallery()
+            }
+        }
+    }
+
+    private fun openGallery() {
+        Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
+            resultLauncher.launch(it)
         }
     }
 

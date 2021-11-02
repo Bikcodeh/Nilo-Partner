@@ -14,7 +14,7 @@
             android:id="@+id/imgProduct"
             android:layout_width="@dimen/product_img_width"
             android:layout_height="0dp"
-            android:background="@color/white_smoke"
+            android:background="@color/gray_100"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintDimensionRatio="1:1" />
