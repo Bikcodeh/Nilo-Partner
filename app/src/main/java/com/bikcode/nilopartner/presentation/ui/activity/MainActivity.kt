@@ -1,5 +1,6 @@
 package com.bikcode.nilopartner.presentation.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -194,6 +195,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                         }
                     }
             }
+            R.id.action_history -> startActivity(Intent(this, OrderActivity::class.java))
         }
         return super.onOptionsItemSelected(item)
     }

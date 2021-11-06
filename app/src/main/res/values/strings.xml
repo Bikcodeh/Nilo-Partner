@@ -16,4 +16,15 @@
     <string name="update_product">Update</string>
     <string name="product_updated">Product updated!</string>
     <string name="error_sending_image">An error has occurred uploading the image</string>
+    <string name="order_status_ordered">Ordered</string>
+    <string name="order_status_preparing">Preparing</string>
+    <string name="order_status_sent">Sent</string>
+    <string name="order_status_delivered">Delivered</string>
+    <string name="order_status_unknown">Unknown</string>
+    <string name="order_history">Order History</string>
+    <string name="cart_full">Total: $%1$.2f</string>
+    <string name="track_order">Track order</string>
+    <string name="status">Status: %1$s</string>
+    <string name="order_id">ID: %1$s</string>
+    <string name="do_you_need_help">Do you need help?</string>
 </resources>
