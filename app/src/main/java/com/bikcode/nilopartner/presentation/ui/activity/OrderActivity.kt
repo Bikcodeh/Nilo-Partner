@@ -9,6 +9,7 @@ import com.bikcode.nilopartner.databinding.ActivityOrderBinding
 import com.bikcode.nilopartner.presentation.adapter.OrderAdapter
 import com.bikcode.nilopartner.presentation.listeners.OnOrderListener
 import com.bikcode.nilopartner.presentation.listeners.OrderAux
+import com.bikcode.nilopartner.presentation.ui.fragment.chat.ChatFragment
 import com.bikcode.nilopartner.presentation.util.Constants.PROP_STATUS
 import com.bikcode.nilopartner.presentation.util.Constants.REQUESTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.showToast
@@ -52,7 +53,13 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
     }
 
     override fun onStartChat(order: OrderDTO) {
-        TODO("Not yet implemented")
+        orderSelected = order
+        val chatFragment = ChatFragment()
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.containerOrder, chatFragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onStatusChange(order: OrderDTO) {

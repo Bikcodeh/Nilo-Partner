@@ -30,4 +30,9 @@
     <string name="hint_status">Status</string>
     <string name="order_title">Order History</string>
     <string name="status_updated">Status updated!</string>
+    <string name="type_here">Type here…</string>
+    <string name="chat_title">Chat support</string>
+    <string name="error_chat">An error has occurred</string>
+    <string name="error_delete_message">An error has occurred deleting message</string>
+    <string name="delete_message">Message deleted!</string>
 </resources>
