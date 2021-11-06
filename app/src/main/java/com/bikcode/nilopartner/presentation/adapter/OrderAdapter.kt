@@ -41,15 +41,21 @@ class OrderAdapter(private val listener: OnOrderListener) :
                 val statusAdapter = ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line, statusValues)
                 actvStatus.setAdapter(statusAdapter)
                 if(index != -1) {
-                    actvStatus.setText(statusValues[index])
+                    actvStatus.setText(statusValues[index], false)
                 } else {
-                    actvStatus.setText(context.getString(R.string.order_status_unknown))
+                    actvStatus.setText(context.getString(R.string.order_status_unknown), false)
                 }
             }
         }
 
         fun setListener(orderDTO: OrderDTO) {
             with(binding) {
+
+                actvStatus.setOnItemClickListener { adapterView, view, position, id ->
+                    orderDTO.status = statusKeys[position]
+                    listener.onStatusChange(orderDTO)
+                }
+
                 chpChat.setOnClickListener {
                     listener.onStartChat(orderDTO)
                 }

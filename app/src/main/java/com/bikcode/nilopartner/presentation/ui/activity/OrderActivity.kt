@@ -9,6 +9,7 @@ import com.bikcode.nilopartner.databinding.ActivityOrderBinding
 import com.bikcode.nilopartner.presentation.adapter.OrderAdapter
 import com.bikcode.nilopartner.presentation.listeners.OnOrderListener
 import com.bikcode.nilopartner.presentation.listeners.OrderAux
+import com.bikcode.nilopartner.presentation.util.Constants.PROP_STATUS
 import com.bikcode.nilopartner.presentation.util.Constants.REQUESTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.showToast
 import com.google.firebase.firestore.FirebaseFirestore
@@ -55,7 +56,14 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
     }
 
     override fun onStatusChange(order: OrderDTO) {
-        TODO("Not yet implemented")
+        val db = FirebaseFirestore.getInstance()
+        db.collection(REQUESTS_COLLECTION).document(order.id)
+            .update(PROP_STATUS, order.status)
+            .addOnSuccessListener {
+                showToast(R.string.status_updated)
+            }.addOnFailureListener {
+                showToast(R.string.error_fetching_data)
+            }
     }
 
     override fun getOrderSelected(): OrderDTO? = orderSelected
