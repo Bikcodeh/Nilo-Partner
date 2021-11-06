@@ -13,7 +13,8 @@
         android:theme="@style/Theme.NiloPartner">
         <activity
             android:name=".presentation.ui.activity.OrderActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:label="@string/order_title"/>
         <activity
             android:name=".presentation.ui.activity.MainActivity"
             android:exported="true">

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bikcode.nilopartner.R
 import com.bikcode.nilopartner.data.model.OrderDTO
@@ -37,12 +38,13 @@ class OrderAdapter(private val listener: OnOrderListener) :
                 tvId.text = context.getString(R.string.order_id, orderDTO.id)
 
                 val index = statusKeys.indexOf(orderDTO.status)
-                val status = if (index != -1) {
-                    statusValues[index]
+                val statusAdapter = ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line, statusValues)
+                actvStatus.setAdapter(statusAdapter)
+                if(index != -1) {
+                    actvStatus.setText(statusValues[index])
                 } else {
-                    context.getString(R.string.order_status_unknown)
+                    actvStatus.setText(context.getString(R.string.order_status_unknown))
                 }
-                tvStatus.text = context.getString(R.string.status, status)
             }
         }
 

@@ -27,4 +27,6 @@
     <string name="status">Status: %1$s</string>
     <string name="order_id">ID: %1$s</string>
     <string name="do_you_need_help">Do you need help?</string>
+    <string name="hint_status">Status</string>
+    <string name="order_title">Order History</string>
 </resources>
