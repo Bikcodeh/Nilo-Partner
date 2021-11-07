@@ -21,10 +21,14 @@ import com.bikcode.nilopartner.presentation.util.showToast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
@@ -35,6 +39,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     private lateinit var productAdapter: ProductAdapter
     private lateinit var firestoreListener: ListenerRegistration
     private var productSelected: ProductDTO? = null
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -44,6 +49,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 val user = FirebaseAuth.getInstance().currentUser
                 if (user != null) {
                     Toast.makeText(this, "Welcome", Toast.LENGTH_SHORT).show()
+                    firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN) {
+                        param(FirebaseAnalytics.Param.SUCCESS, 100) // 1000 = login successfully
+                        param(FirebaseAnalytics.Param.METHOD, "login")
+                    }
                 } else {
                     Toast.makeText(this, "Not logged", Toast.LENGTH_SHORT).show()
                 }
@@ -73,6 +82,11 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         //setupFirestore()
         //setupFirestoreRealtime()
         setupButtons()
+        setupAnalytics()
+    }
+
+    private fun setupAnalytics() {
+        firebaseAnalytics = Firebase.analytics
     }
 
     private fun setupFirestoreRealtime() {
@@ -184,6 +198,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                 AuthUI.getInstance().signOut(this)
                     .addOnSuccessListener {
                         Toast.makeText(this, "Log out", Toast.LENGTH_SHORT).show()
+                        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN) {
+                            param(FirebaseAnalytics.Param.SUCCESS, 100) // 100 = login successfully
+                            param(FirebaseAnalytics.Param.METHOD, "sign_out")
+                        }
                     }.addOnCompleteListener {
                         if (it.isSuccessful) {
                             binding.nsvProducts.visibility = View.GONE
@@ -192,6 +210,10 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                         } else {
                             Toast.makeText(this, "A problem has occurred", Toast.LENGTH_SHORT)
                                 .show()
+                            firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LOGIN) {
+                                param(FirebaseAnalytics.Param.SUCCESS, 201) // 201 = error sign out
+                                param(FirebaseAnalytics.Param.METHOD, "sign_out")
+                            }
                         }
                     }
             }

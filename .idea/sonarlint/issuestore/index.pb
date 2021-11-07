@@ -13,8 +13,6 @@ Uapp/src/main/java/com/bikcode/nilopartner/presentation/ui/dialog/AddDialogFragm
 Papp/src/main/java/com/bikcode/nilopartner/presentation/adapter/ProductAdapter.kt,5\b\5b278818b4d20a4f84a01394de73c66c9bd055fd
 t
 Dapp/src/main/java/com/bikcode/nilopartner/data/model/ProductOrder.kt,b\8\b841632bd02da51f88f44c7decb3486ac1d22926
-‚
-Rapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/MainActivity.kt,7\5\75e67c2a49af297e5319e6792244883598c9806b
 |
 Lapp/src/main/java/com/bikcode/nilopartner/presentation/listeners/OrderAux.kt,f\7\f7ff2b3ba8be0d635f6340ca800fca6a02af3176
 ƒ
