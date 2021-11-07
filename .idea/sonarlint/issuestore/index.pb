@@ -19,7 +19,7 @@ Rapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/MainActivity
 Lapp/src/main/java/com/bikcode/nilopartner/presentation/listeners/OrderAux.kt,f\7\f7ff2b3ba8be0d635f6340ca800fca6a02af3176
 ƒ
 Sapp/src/main/java/com/bikcode/nilopartner/presentation/listeners/OnOrderListener.kt,f\2\f28d9d6e5889f68d5df1850c950437bde311ab95
-P
- app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
-~
-Napp/src/main/java/com/bikcode/nilopartner/presentation/adapter/OrderAdapter.kt,1\c\1c3a5b4d36c04753f8103e3fbbd8eceb9bdc77fc
+p
+@app/src/main/java/com/bikcode/nilopartner/data/model/OrderDTO.kt,6\f\6f45a1212ab2d7f657a26260b9790570084dcbfc
+‚
+Rapp/src/main/java/com/bikcode/nilopartner/presentation/listeners/OnChatListener.kt,2\c\2c35eb941040106a48d07646b3326c812ea7ea2e
