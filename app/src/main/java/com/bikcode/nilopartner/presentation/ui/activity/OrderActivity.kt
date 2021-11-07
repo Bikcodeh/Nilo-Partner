@@ -17,7 +17,11 @@ import com.bikcode.nilopartner.presentation.util.Constants.REQUESTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.Constants.TOKENS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.Constants.USERS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.showToast
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 
 class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
 
@@ -112,6 +116,18 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
         db.collection(REQUESTS_COLLECTION).document(order.id)
             .update(PROP_STATUS, order.status)
             .addOnSuccessListener {
+                val analytics = Firebase.analytics
+                analytics.logEvent(FirebaseAnalytics.Event.ADD_SHIPPING_INFO) {
+                    val products = mutableListOf<Bundle>()
+                    order.products.forEach {
+                        val bundle = Bundle()
+                        bundle.putString("id_product", it.key)
+                        products.add(bundle)
+                    }
+
+                    param(FirebaseAnalytics.Param.SHIPPING, products.toTypedArray())
+                    param(FirebaseAnalytics.Param.PRICE, order.totalPrice)
+                }
                 showToast(R.string.status_updated)
                 notifyClient(order)
             }.addOnFailureListener {
