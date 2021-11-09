@@ -21,6 +21,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.ktx.Firebase
 
 class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
@@ -48,7 +49,9 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
 
     private fun setupFirestore() {
         val db = FirebaseFirestore.getInstance()
-        db.collection(REQUESTS_COLLECTION).get()
+        db.collection(REQUESTS_COLLECTION)
+            .orderBy("status", Query.Direction.ASCENDING)
+            .get()
             .addOnSuccessListener {
                 for(document in it) {
                     val order = document.toObject(OrderDTO::class.java)
