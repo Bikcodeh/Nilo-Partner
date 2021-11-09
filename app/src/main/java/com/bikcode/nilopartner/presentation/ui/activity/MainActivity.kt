@@ -16,6 +16,7 @@ import com.bikcode.nilopartner.presentation.adapter.ProductAdapter
 import com.bikcode.nilopartner.presentation.listeners.MainAux
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
 import com.bikcode.nilopartner.presentation.ui.dialog.AddDialogFragment
+import com.bikcode.nilopartner.presentation.util.Constants
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.showToast
 import com.firebase.ui.auth.AuthUI
@@ -29,6 +30,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
@@ -231,13 +233,20 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     }
 
     override fun onLongClick(product: ProductDTO) {
+
         val db = FirebaseFirestore.getInstance()
         val productRef = db.collection(PRODUCTS_COLLECTION)
         product.id?.let { id ->
-            productRef.document(id)
+            FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
                 .delete()
-                .addOnFailureListener {
-                    showToast(R.string.delete_error)
+                .addOnSuccessListener {
+                    productRef.document(id)
+                        .delete()
+                        .addOnFailureListener {
+                            showToast(R.string.delete_error)
+                        }
+                }.addOnFailureListener {
+                    showToast(R.string.error_deleting_image)
                 }
         }
     }

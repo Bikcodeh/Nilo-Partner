@@ -37,4 +37,5 @@
     <string name="error_chat">An error has occurred</string>
     <string name="error_delete_message">An error has occurred deleting message</string>
     <string name="delete_message">Message deleted!</string>
+    <string name="error_deleting_image">An error has occurred deleting image</string>
 </resources>
