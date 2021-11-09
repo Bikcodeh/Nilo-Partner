@@ -23,4 +23,7 @@ object Constants {
     const val PARAM_SUCCESS = "success"
 
     const val PROP_TOKEN = "token"
+
+    //Queries
+    const val PROP_DATE = "date"
 }

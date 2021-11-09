@@ -11,6 +11,7 @@ import com.bikcode.nilopartner.presentation.adapter.OrderAdapter
 import com.bikcode.nilopartner.presentation.listeners.OnOrderListener
 import com.bikcode.nilopartner.presentation.listeners.OrderAux
 import com.bikcode.nilopartner.presentation.ui.fragment.chat.ChatFragment
+import com.bikcode.nilopartner.presentation.util.Constants.PROP_DATE
 import com.bikcode.nilopartner.presentation.util.Constants.PROP_STATUS
 import com.bikcode.nilopartner.presentation.util.Constants.PROP_TOKEN
 import com.bikcode.nilopartner.presentation.util.Constants.REQUESTS_COLLECTION
@@ -50,7 +51,7 @@ class OrderActivity : AppCompatActivity(), OnOrderListener, OrderAux {
     private fun setupFirestore() {
         val db = FirebaseFirestore.getInstance()
         db.collection(REQUESTS_COLLECTION)
-            .orderBy("status", Query.Direction.ASCENDING)
+            .orderBy(PROP_DATE, Query.Direction.DESCENDING)
             .get()
             .addOnSuccessListener {
                 for(document in it) {
