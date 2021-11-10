@@ -22,6 +22,7 @@ import com.bikcode.nilopartner.presentation.util.EventPost
 import com.bikcode.nilopartner.presentation.util.showToast
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 
@@ -102,7 +103,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             positiveButton?.setOnClickListener {
                 enableUI(enable = false)
 
-                uploadImage(productSelected?.id) { eventPost ->
+                uploadReduceImage(productSelected?.id) { eventPost ->
                     if (eventPost.isSuccess) {
                         _binding?.let { binding ->
                             if (productSelected != null) {
@@ -136,7 +137,45 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         }
     }
 
-    private fun uploadImage(productId: String?, callback: (EventPost) -> Unit) {
+    private fun uploadReduceImage(productId: String?, callback: (EventPost) -> Unit) {
+        val eventPost = EventPost()
+        eventPost.documentId =
+            productId ?: FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION)
+                .document().id
+
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+            val imagesRef = FirebaseStorage.getInstance().reference.child(user.uid).child(PATH_PRODUCTS_IMAGES)
+            val photoRef = imagesRef.child(eventPost.documentId!!)
+
+            photoSelectedUri?.let { uri ->
+                _binding?.let { binding ->
+                    binding.progressBar.isVisible = true
+                    photoRef.putFile(uri)
+                        .addOnProgressListener {
+                            val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
+                            it.run {
+                                binding.progressBar.progress = progress
+                                binding.tvProgress.text = String.format("%s%%", progress)
+                            }
+                        }
+                        .addOnSuccessListener {
+                            it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+                                eventPost.isSuccess = true
+                                eventPost.photoUrl = downloadUrl.toString()
+                                callback(eventPost)
+                            }
+                        }.addOnFailureListener {
+                            context?.showToast(R.string.error_sending_image)
+                            enableUI(enable = true)
+                            eventPost.isSuccess = false
+                            callback(eventPost)
+                        }
+                }
+            }
+        }
+    }
+
+    /*private fun uploadImage(productId: String?, callback: (EventPost) -> Unit) {
         val eventPost = EventPost()
         eventPost.documentId =
             productId ?: FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION)
@@ -169,7 +208,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                     }
             }
         }
-    }
+    }*/
 
     private fun configButtons() {
         _binding?.let {
