@@ -239,20 +239,24 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             .setTitle(R.string.dialog_delete_product_title)
             .setMessage(R.string.dialog_delete_product_message)
             .setPositiveButton(R.string.dialog_delete_action_confirm) { _, _ ->
-                val db = FirebaseFirestore.getInstance()
-                val productRef = db.collection(PRODUCTS_COLLECTION)
-                product.id?.let { id ->
-                    FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
-                        .delete()
-                        .addOnSuccessListener {
-                            productRef.document(id)
-                                .delete()
-                                .addOnFailureListener {
-                                    showToast(R.string.delete_error)
-                                }
-                        }.addOnFailureListener {
-                            showToast(R.string.error_deleting_image)
-                        }
+                product.imgUrl?.let { imageUrl ->
+                    val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
+                    val db = FirebaseFirestore.getInstance()
+                    val productRef = db.collection(PRODUCTS_COLLECTION)
+                    product.id?.let { id ->
+                        //FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
+                        imageRef
+                            .delete()
+                            .addOnSuccessListener {
+                                productRef.document(id)
+                                    .delete()
+                                    .addOnFailureListener {
+                                        showToast(R.string.delete_error)
+                                    }
+                            }.addOnFailureListener {
+                                showToast(R.string.error_deleting_image)
+                            }
+                    }
                 }
             }
             .setNegativeButton(R.string.dialog_cancel, null)
