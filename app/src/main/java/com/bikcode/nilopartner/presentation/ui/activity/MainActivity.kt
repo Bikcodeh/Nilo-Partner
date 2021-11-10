@@ -22,6 +22,7 @@ import com.bikcode.nilopartner.presentation.util.showToast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -234,21 +235,29 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     override fun onLongClick(product: ProductDTO) {
 
-        val db = FirebaseFirestore.getInstance()
-        val productRef = db.collection(PRODUCTS_COLLECTION)
-        product.id?.let { id ->
-            FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
-                .delete()
-                .addOnSuccessListener {
-                    productRef.document(id)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.dialog_delete_product_title)
+            .setMessage(R.string.dialog_delete_product_message)
+            .setPositiveButton(R.string.dialog_delete_action_confirm) { _, _ ->
+                val db = FirebaseFirestore.getInstance()
+                val productRef = db.collection(PRODUCTS_COLLECTION)
+                product.id?.let { id ->
+                    FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
                         .delete()
-                        .addOnFailureListener {
-                            showToast(R.string.delete_error)
+                        .addOnSuccessListener {
+                            productRef.document(id)
+                                .delete()
+                                .addOnFailureListener {
+                                    showToast(R.string.delete_error)
+                                }
+                        }.addOnFailureListener {
+                            showToast(R.string.error_deleting_image)
                         }
-                }.addOnFailureListener {
-                    showToast(R.string.error_deleting_image)
                 }
-        }
+            }
+            .setNegativeButton(R.string.dialog_cancel, null)
+            .show()
+
     }
 
     override fun getProductSelected(): ProductDTO? = productSelected

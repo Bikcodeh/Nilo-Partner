@@ -80,7 +80,7 @@ class ProductAdapter: RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
             }
 
             binding.root.setOnLongClickListener {
-                listener.onClick(productDTO)
+                listener.onLongClick(productDTO)
                 true
             }
         }

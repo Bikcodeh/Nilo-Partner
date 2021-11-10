@@ -7,8 +7,6 @@ x
 Happ/src/main/java/com/bikcode/nilopartner/presentation/util/EventPost.kt,7\8\78ec038b092cc3edaed35403ec708877607dedc4
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
-€
-Papp/src/main/java/com/bikcode/nilopartner/presentation/adapter/ProductAdapter.kt,5\b\5b278818b4d20a4f84a01394de73c66c9bd055fd
 t
 Dapp/src/main/java/com/bikcode/nilopartner/data/model/ProductOrder.kt,b\8\b841632bd02da51f88f44c7decb3486ac1d22926
 |

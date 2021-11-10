@@ -38,4 +38,8 @@
     <string name="error_delete_message">An error has occurred deleting message</string>
     <string name="delete_message">Message deleted!</string>
     <string name="error_deleting_image">An error has occurred deleting image</string>
+    <string name="dialog_delete_product_title">Delete product?</string>
+    <string name="dialog_delete_product_message">The product will be delete permanently</string>
+    <string name="dialog_delete_action_confirm">Delete</string>
+    <string name="dialog_cancel">Cancel</string>
 </resources>
