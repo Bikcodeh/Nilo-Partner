@@ -4,7 +4,10 @@ import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -25,6 +28,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
 
 class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragment(),
     DialogInterface.OnShowListener {
@@ -150,26 +154,32 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             photoSelectedUri?.let { uri ->
                 _binding?.let { binding ->
                     binding.progressBar.isVisible = true
-                    photoRef.putFile(uri)
-                        .addOnProgressListener {
-                            val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
-                            it.run {
-                                binding.progressBar.progress = progress
-                                binding.tvProgress.text = String.format("%s%%", progress)
+
+                    getBitmapFromUri(uri)?.let { bitmap ->
+                        val baos = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos)
+
+                        photoRef.putBytes(baos.toByteArray())
+                            .addOnProgressListener {
+                                val progress = (100 * it.bytesTransferred / it.totalByteCount).toInt()
+                                it.run {
+                                    binding.progressBar.progress = progress
+                                    binding.tvProgress.text = String.format("%s%%", progress)
+                                }
                             }
-                        }
-                        .addOnSuccessListener {
-                            it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
-                                eventPost.isSuccess = true
-                                eventPost.photoUrl = downloadUrl.toString()
+                            .addOnSuccessListener {
+                                it.storage.downloadUrl.addOnSuccessListener { downloadUrl ->
+                                    eventPost.isSuccess = true
+                                    eventPost.photoUrl = downloadUrl.toString()
+                                    callback(eventPost)
+                                }
+                            }.addOnFailureListener {
+                                context?.showToast(R.string.error_sending_image)
+                                enableUI(enable = true)
+                                eventPost.isSuccess = false
                                 callback(eventPost)
                             }
-                        }.addOnFailureListener {
-                            context?.showToast(R.string.error_sending_image)
-                            enableUI(enable = true)
-                            eventPost.isSuccess = false
-                            callback(eventPost)
-                        }
+                    }
                 }
             }
         }
@@ -209,6 +219,19 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             }
         }
     }*/
+
+    private fun getBitmapFromUri(uri: Uri): Bitmap? {
+        activity?.let {
+            val bitmap = if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(it.contentResolver, uri)
+                ImageDecoder.decodeBitmap(source)
+            } else {
+                MediaStore.Images.Media.getBitmap(it.contentResolver, uri)
+            }
+            return bitmap
+        }
+        return null
+    }
 
     private fun configButtons() {
         _binding?.let {
