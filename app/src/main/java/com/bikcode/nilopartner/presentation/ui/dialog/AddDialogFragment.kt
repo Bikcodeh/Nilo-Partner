@@ -157,7 +157,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
 
                     getBitmapFromUri(uri)?.let { bitmap ->
                         val baos = ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos)
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
 
                         photoRef.putBytes(baos.toByteArray())
                             .addOnProgressListener {
@@ -228,9 +228,26 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             } else {
                 MediaStore.Images.Media.getBitmap(it.contentResolver, uri)
             }
-            return bitmap
+            return getResizedImage(bitmap, 320)
         }
         return null
+    }
+
+    private fun getResizedImage(image: Bitmap, maxSize: Int): Bitmap {
+        var width = image.width
+        var height = image.height
+
+        if(width <= maxSize && height  <= maxSize) return image
+
+        val bitmapRatio = width.toFloat() / height.toFloat()
+        if(bitmapRatio > 1) {
+            width = maxSize
+            height = (width / bitmapRatio).toInt()
+        } else {
+            height = maxSize
+            width = (height / bitmapRatio).toInt()
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true)
     }
 
     private fun configButtons() {
