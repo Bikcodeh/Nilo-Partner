@@ -9,7 +9,8 @@ data class ProductDTO(
     var description: String? = null,
     var imgUrl: String? = null,
     var quantity: Int = 0,
-    var price: Double = 0.0
+    var price: Double = 0.0,
+    var sellerId: String? = ""
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

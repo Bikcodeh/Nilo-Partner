@@ -3,8 +3,6 @@ A
 gradle.properties,2\a\2afbb999f001938c88fa43fc2ef52abf0f8213e4
 q
 Aapp/src/main/java/com/bikcode/nilopartner/domain/model/Product.kt,9\6\9699fa3fa49a7a0b93e783e9423c337a1ee5b929
-x
-Happ/src/main/java/com/bikcode/nilopartner/presentation/util/EventPost.kt,7\8\78ec038b092cc3edaed35403ec708877607dedc4
 <
 build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
 t
@@ -35,3 +33,11 @@ Lapp/src/main/java/com/bikcode/nilopartner/data/service/fcm/NotificationRS.kt,9
 Rapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/MainActivity.kt,7\5\75e67c2a49af297e5319e6792244883598c9806b
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+€
+Papp/src/main/java/com/bikcode/nilopartner/presentation/adapter/ProductAdapter.kt,5\b\5b278818b4d20a4f84a01394de73c66c9bd055fd
+P
+ app/src/main/AndroidManifest.xml,8\c\8c55c3ccc257e5907959013f99656e4c8ec3903e
+ƒ
+Sapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/OrderActivity.kt,9\9\999ce0b64bf5ed584411e9da8694ce86f33cf8c2
+x
+Happ/src/main/java/com/bikcode/nilopartner/presentation/util/Constants.kt,c\2\c22ac7eb2c6dbb419a4c82e4e2eaa327ed61d5aa

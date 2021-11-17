@@ -123,6 +123,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                                     quantity = binding.tieQuantity.text.toString().toInt()
                                     price = binding.tiePrice.text.toString().toDouble()
                                     imgUrl = eventPost.photoUrl
+                                    sellerId = eventPost.sellerId
 
                                     update(this)
                                 }
@@ -157,6 +158,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         FirebaseAuth.getInstance().currentUser?.let { user ->
             val imagesRef = FirebaseStorage.getInstance().reference.child(user.uid).child(PATH_PRODUCTS_IMAGES)
             val photoRef = imagesRef.child(eventPost.documentId!!)
+            eventPost.sellerId = user.uid
 
             if(photoSelectedUri != null) {
                 eventPost.isSuccess = true
@@ -298,12 +300,12 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         db.collection(PRODUCTS_COLLECTION).document(documentId).set(productDTO)
             .addOnSuccessListener {
                 context?.showToast(R.string.product_added)
+                dismiss()
             }.addOnFailureListener {
                 context?.showToast(R.string.insert_error)
-            }.addOnCompleteListener {
                 enableUI(enable = true)
+            }.addOnCompleteListener {
                 _binding?.progressBar?.isVisible = false
-                dismiss()
             }
     }
 
