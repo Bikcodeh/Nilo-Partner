@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -71,6 +72,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         //val product = (activity as? MainAux).getProductSelected()
         productSelected?.let { productExist ->
             _binding?.let {
+                dialog?.setTitle("Update product")
                 it.tieName.setText(productExist.name)
                 it.tieDescription.setText(productExist.description)
                 it.tiePrice.setText(productExist.price.toString())
@@ -96,6 +98,10 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         dialog?.let {
             positiveButton = it.getButton(Dialog.BUTTON_POSITIVE)
             negativeButton = it.getButton(Dialog.BUTTON_NEGATIVE)
+
+            productSelected?.let {
+                positiveButton?.setText(getString(R.string.update_product))
+            }
 
             val textButtonId = if (productSelected != null) {
                 R.string.update_product
@@ -311,6 +317,8 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                 tiePrice.isEnabled = enable
                 tieName.isEnabled = enable
                 tieDescription.isEnabled = enable
+                progressBar.visibility = if(enable) View.INVISIBLE else View.VISIBLE
+                tvProgress.visibility = if(enable) View.INVISIBLE else View.VISIBLE
             }
         }
     }
