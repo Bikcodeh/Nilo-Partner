@@ -37,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageException
 
 class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
@@ -321,28 +322,42 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             .setTitle(R.string.dialog_delete_product_title)
             .setMessage(R.string.dialog_delete_product_message)
             .setPositiveButton(R.string.dialog_delete_action_confirm) { _, _ ->
-                product.imgUrl?.let { imageUrl ->
-                    val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
-                    val db = FirebaseFirestore.getInstance()
-                    val productRef = db.collection(PRODUCTS_COLLECTION)
-                    product.id?.let { id ->
-                        //FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
-                        imageRef
-                            .delete()
-                            .addOnSuccessListener {
-                                productRef.document(id)
-                                    .delete()
-                                    .addOnFailureListener {
-                                        showToast(R.string.delete_error)
+                product.id?.let { id ->
+                    product.imgUrl?.let { imageUrl ->
+                        try {
+                            val imageRef =
+                                FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl)
+                            //FirebaseStorage.getInstance().reference.child(Constants.PATH_PRODUCTS_IMAGES).child(id)
+                            imageRef
+                                .delete()
+                                .addOnSuccessListener {
+                                    deleteProduct(id)
+                                }.addOnFailureListener {
+                                    if ((it as StorageException).errorCode == StorageException.ERROR_OBJECT_NOT_FOUND) {
+                                        deleteProduct(id)
+                                    } else {
+                                        showToast(R.string.error_deleting_image)
                                     }
-                            }.addOnFailureListener {
-                                showToast(R.string.error_deleting_image)
-                            }
+                                }
+                        } catch (exception: Exception) {
+                            exception.printStackTrace()
+                            deleteProduct(id)
+                        }
                     }
                 }
             }
             .setNegativeButton(R.string.dialog_cancel, null)
             .show()
+    }
+
+    private fun deleteProduct(productId: String) {
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(PRODUCTS_COLLECTION)
+        productRef.document(productId)
+            .delete()
+            .addOnFailureListener {
+                showToast(R.string.delete_error)
+            }
     }
 
     override fun getProductSelected(): ProductDTO? = productSelected
