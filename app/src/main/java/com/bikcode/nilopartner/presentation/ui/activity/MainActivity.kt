@@ -1,10 +1,14 @@
 package com.bikcode.nilopartner.presentation.ui.activity
 
+import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -16,13 +20,14 @@ import com.bikcode.nilopartner.presentation.adapter.ProductAdapter
 import com.bikcode.nilopartner.presentation.listeners.MainAux
 import com.bikcode.nilopartner.presentation.listeners.OnProductListener
 import com.bikcode.nilopartner.presentation.ui.dialog.AddDialogFragment
-import com.bikcode.nilopartner.presentation.util.Constants
+import com.bikcode.nilopartner.presentation.util.Constants.PATH_PRODUCTS_IMAGES
 import com.bikcode.nilopartner.presentation.util.Constants.PRODUCTS_COLLECTION
 import com.bikcode.nilopartner.presentation.util.showToast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -44,7 +49,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     private var productSelected: ProductDTO? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
-    private val resultLauncher =
+    private val authLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val response = IdpResponse.fromResultIntent(it.data)
 
@@ -76,6 +81,63 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             }
         }
 
+    private var count = 0
+    private val uriList = mutableListOf<Uri>()
+    private val progressSnackBar: Snackbar by lazy {
+        Snackbar.make(binding.root,
+            "",
+            Snackbar.LENGTH_INDEFINITE)
+    }
+
+    private var galleryResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                if (it.data?.clipData != null) {
+                    count = it.data!!.clipData!!.itemCount
+                    for (i in 0..count - 1) {
+                        uriList.add(it.data!!.clipData!!.getItemAt(i).uri)
+                    }
+
+                    if (count > 0) uploadImage(0)
+                }
+            }
+        }
+
+    private fun uploadImage(position: Int) {
+        FirebaseAuth.getInstance().currentUser?.let { user ->
+
+            progressSnackBar.apply {
+                setText("Uploading picture ${position + 1} of $count")
+                    .show()
+            }
+
+            val productRef = FirebaseStorage.getInstance().reference
+                .child(user.uid)
+                .child(PATH_PRODUCTS_IMAGES)
+                .child(productSelected?.id!!)
+                .child("image${position + 1}")
+
+            productRef.putFile(uriList[position])
+                .addOnSuccessListener {
+                    if (position < count - 1) {
+                        uploadImage(position + 1)
+                    } else {
+                        progressSnackBar.apply {
+                            setText(getString(R.string.pictures_uploaded))
+                            setDuration(Snackbar.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
+                }.addOnFailureListener {
+                    progressSnackBar.apply {
+                        setText("Error uploading photo ${position + 1}")
+                        setDuration(Snackbar.LENGTH_LONG)
+                            .show()
+                    }
+                }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -97,15 +159,15 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         val productRef = db.collection(PRODUCTS_COLLECTION)
 
         firestoreListener = productRef.addSnapshotListener { snapshots, error ->
-            if(error != null) {
+            if (error != null) {
                 showToast(R.string.error_fetching_data)
                 return@addSnapshotListener
             }
 
-            for(snapshot in snapshots!!.documentChanges) {
+            for (snapshot in snapshots!!.documentChanges) {
                 val product = snapshot.document.toObject(ProductDTO::class.java)
                 product.id = snapshot.document.id
-                when(snapshot.type) {
+                when (snapshot.type) {
                     DocumentChange.Type.ADDED -> productAdapter.add(product)
                     DocumentChange.Type.REMOVED -> productAdapter.delete(product)
                     DocumentChange.Type.MODIFIED -> productAdapter.update(product)
@@ -144,7 +206,7 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
                     AuthUI.IdpConfig.GoogleBuilder().build()
                 )
 
-                resultLauncher.launch(
+                authLauncher.launch(
                     AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
@@ -181,7 +243,6 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
         super.onResume()
         firebaseAuth.addAuthStateListener(authStateListener)
         setupFirestoreRealtime()
-
     }
 
     override fun onPause() {
@@ -234,6 +295,27 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
     }
 
     override fun onLongClick(product: ProductDTO) {
+        val adapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_singlechoice)
+        adapter.add("Delete")
+        adapter.add("Add photos")
+
+        MaterialAlertDialogBuilder(this)
+            .setAdapter(adapter) { dialogInterface: DialogInterface, position: Int ->
+                when (position) {
+                    0 -> confirmDeleteProduct(product)
+                    1 -> {
+                        productSelected = product
+                        Intent(Intent.ACTION_PICK,
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
+                            it.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                            galleryResult.launch(it)
+                        }
+                    }
+                }
+            }.show()
+    }
+
+    private fun confirmDeleteProduct(product: ProductDTO) {
 
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.dialog_delete_product_title)
@@ -261,7 +343,6 @@ class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
             }
             .setNegativeButton(R.string.dialog_cancel, null)
             .show()
-
     }
 
     override fun getProductSelected(): ProductDTO? = productSelected

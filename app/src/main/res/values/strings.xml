@@ -42,4 +42,5 @@
     <string name="dialog_delete_product_message">The product will be delete permanently</string>
     <string name="dialog_delete_action_confirm">Delete</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="pictures_uploaded">Pictures uploade succesfully</string>
 </resources>

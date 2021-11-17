@@ -29,8 +29,6 @@ v
 Fapp/src/main/java/com/bikcode/nilopartner/data/service/VolleyHelper.kt,f\0\f08d0aa5ce19fc4b92af1983b880572e7d20c598
 |
 Lapp/src/main/java/com/bikcode/nilopartner/data/service/fcm/NotificationRS.kt,9\7\97a1bd2fac0364557f64fcf2372f86c7e898a4f9
-‚
-Rapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/MainActivity.kt,7\5\75e67c2a49af297e5319e6792244883598c9806b
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
 €
@@ -41,3 +39,7 @@ P
 Sapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/OrderActivity.kt,9\9\999ce0b64bf5ed584411e9da8694ce86f33cf8c2
 x
 Happ/src/main/java/com/bikcode/nilopartner/presentation/util/Constants.kt,c\2\c22ac7eb2c6dbb419a4c82e4e2eaa327ed61d5aa
+x
+Happ/src/main/java/com/bikcode/nilopartner/presentation/util/EventPost.kt,7\8\78ec038b092cc3edaed35403ec708877607dedc4
+r
+Bapp/src/main/java/com/bikcode/nilopartner/data/model/ProductDTO.kt,5\d\5dbf5bdc59bf1cdcc484f3da4454f4d2cc9b3cbe

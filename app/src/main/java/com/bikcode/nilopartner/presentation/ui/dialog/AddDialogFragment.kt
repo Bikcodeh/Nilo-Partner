@@ -43,8 +43,14 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
                 photoSelectedUri = it.data?.data
-
-                _binding?.imgProductPreview?.setImageURI(photoSelectedUri)
+                _binding?.imgProductPreview?.let { view ->
+                    Glide.with(this)
+                        .load(photoSelectedUri)
+                        .placeholder(R.drawable.ic_access_time)
+                        .error(R.drawable.ic_broken_image)
+                        .centerCrop()
+                        .into(view)
+                }
             }
         }
 
@@ -133,7 +139,9 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
                                     description = binding.tieDescription.text.toString().trim(),
                                     quantity = binding.tieQuantity.text.toString().toInt(),
                                     price = binding.tiePrice.text.toString().toDouble(),
-                                    imgUrl = eventPost.photoUrl
+                                    imgUrl = eventPost.photoUrl,
+                                    sellerId = eventPost.sellerId
+
                                 )
                                 save(product, eventPost.documentId!!)
                             }
@@ -160,7 +168,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             val photoRef = imagesRef.child(eventPost.documentId!!).child("image0")
             eventPost.sellerId = user.uid
 
-            if(photoSelectedUri != null) {
+            if(photoSelectedUri == null) {
                 eventPost.isSuccess = true
                 callback(eventPost)
             } else {
