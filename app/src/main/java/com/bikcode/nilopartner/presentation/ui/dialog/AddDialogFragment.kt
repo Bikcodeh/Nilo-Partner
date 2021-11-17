@@ -107,7 +107,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             positiveButton?.setOnClickListener {
                 enableUI(enable = false)
 
-                uploadReduceImage(productSelected?.id) { eventPost ->
+                uploadReduceImage(productSelected?.id, product?.imgUrl) { eventPost ->
                     if (eventPost.isSuccess) {
                         _binding?.let { binding ->
                             if (productSelected != null) {
@@ -141,8 +141,9 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
         }
     }
 
-    private fun uploadReduceImage(productId: String?, callback: (EventPost) -> Unit) {
+    private fun uploadReduceImage(productId: String?, imageUrl: String?, callback: (EventPost) -> Unit) {
         val eventPost = EventPost()
+        imageUrl?.let { eventPost.photoUrl = it }
         eventPost.documentId =
             productId ?: FirebaseFirestore.getInstance().collection(PRODUCTS_COLLECTION)
                 .document().id
@@ -151,11 +152,14 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
             val imagesRef = FirebaseStorage.getInstance().reference.child(user.uid).child(PATH_PRODUCTS_IMAGES)
             val photoRef = imagesRef.child(eventPost.documentId!!)
 
-            photoSelectedUri?.let { uri ->
+            if(photoSelectedUri != null) {
+                eventPost.isSuccess = true
+                callback(eventPost)
+            } else {
                 _binding?.let { binding ->
                     binding.progressBar.isVisible = true
 
-                    getBitmapFromUri(uri)?.let { bitmap ->
+                    getBitmapFromUri(photoSelectedUri!!)?.let { bitmap ->
                         val baos = ByteArrayOutputStream()
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
 

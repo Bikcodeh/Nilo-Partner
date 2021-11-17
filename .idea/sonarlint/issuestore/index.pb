@@ -31,5 +31,7 @@ v
 Fapp/src/main/java/com/bikcode/nilopartner/data/service/VolleyHelper.kt,f\0\f08d0aa5ce19fc4b92af1983b880572e7d20c598
 |
 Lapp/src/main/java/com/bikcode/nilopartner/data/service/fcm/NotificationRS.kt,9\7\97a1bd2fac0364557f64fcf2372f86c7e898a4f9
+‚
+Rapp/src/main/java/com/bikcode/nilopartner/presentation/ui/activity/MainActivity.kt,7\5\75e67c2a49af297e5319e6792244883598c9806b
 @
 app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
