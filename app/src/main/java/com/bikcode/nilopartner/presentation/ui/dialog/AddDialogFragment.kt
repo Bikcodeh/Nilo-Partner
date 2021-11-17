@@ -157,7 +157,7 @@ class AddDialogFragment(private val product: ProductDTO? = null) : DialogFragmen
 
         FirebaseAuth.getInstance().currentUser?.let { user ->
             val imagesRef = FirebaseStorage.getInstance().reference.child(user.uid).child(PATH_PRODUCTS_IMAGES)
-            val photoRef = imagesRef.child(eventPost.documentId!!)
+            val photoRef = imagesRef.child(eventPost.documentId!!).child("image0")
             eventPost.sellerId = user.uid
 
             if(photoSelectedUri != null) {
